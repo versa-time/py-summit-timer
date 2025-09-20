@@ -1,0 +1,24 @@
+[project]
+name = "py-summit-timer"
+version = "0.1.0"
+description = "Interfacing with Summit race timers."
+authors = [
+    {name = "es-mitty", email = "esmitty1212@gmail.com"},
+]
+dependencies = ["pyserial>=3.5"]
+requires-python = ">=3.13"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.13.1",
+]
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
