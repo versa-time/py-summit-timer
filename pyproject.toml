@@ -5,7 +5,7 @@ description = "Interfacing with Summit race timers."
 authors = [
     {name = "es-mitty", email = "esmitty1212@gmail.com"},
 ]
-dependencies = ["pyserial>=3.5"]
+dependencies = ["pyserial>=3.5", "crc>=7.1.0"]
 requires-python = ">=3.13"
 readme = "README.md"
 license = {text = "MIT"}

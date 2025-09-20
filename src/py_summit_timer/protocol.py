@@ -1,4 +1,31 @@
 from dataclasses import dataclass
+from typing import Generator
+        
+class Packet:
+    @staticmethod
+    def from_parts(parts: list[str]) -> 'Packet | None':
+        if len(parts) < 1:
+            return None
+        match parts[0]:
+            case "RS":  # Reset / Disable Reset
+                pass
+            case "SY":  # Synchronize
+                pass
+            case "SYO":  # Synchronize Offset
+                pass
+            case "TK":  # Token
+                pass
+            case "EV":  # Event and Heat
+                pass
+            case "AK":  # Acknowledge
+                pass
+            case _:
+                try:
+                    int(parts[0])  # This is a data packet
+                except ValueError:
+                    return None
+
+
 
 @dataclass
 class Command:
