@@ -2,6 +2,7 @@ import serial
 
 from summit_timer.protocol import Packet
 
+
 class Transport:
     def __init__(self, port: str, baudrate: int = 9600, timeout: float = 1.0):
         self.port = port
@@ -18,7 +19,9 @@ class Transport:
 
     def open(self):
         if self.connection is None or not self.connection.is_open:
-            self.connection = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
+            self.connection = serial.Serial(
+                self.port, self.baudrate, timeout=self.timeout
+            )
 
     def close(self):
         if self.connection and self.connection.is_open:
@@ -28,13 +31,13 @@ class Transport:
         if self.connection and self.connection.is_open:
             if isinstance(data, Packet):
                 data = data.to_string()
-            self.connection.write(data.encode() + b'\r\n')
+            self.connection.write(data.encode() + b"\r\n")
         else:
             raise ConnectionError("Transport connection is not open.")
 
     def receive(self) -> str:
         if self.connection and self.connection.is_open:
             line = self.connection.readline()
-            return line.decode().rstrip('\r\n')
+            return line.decode().rstrip("\r\n")
         else:
             raise ConnectionError("Transport connection is not open.")

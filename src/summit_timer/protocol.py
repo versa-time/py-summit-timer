@@ -34,7 +34,7 @@ def data_from_string(data: str) -> list[str] | None:
             content = data[1:end]
             crc = data[end + 1 :]
             if validate_crc(content, crc.strip()):
-                # Data packets are tab-separated 
+                # Data packets are tab-separated
                 if "\t" in content:
                     return content.split("\t")
                 # Command and Response packets are space-separated
@@ -49,7 +49,7 @@ def wrap_payload(payload: str) -> str:
     return f"{{{payload}}}{crc:04x}"
 
 
-class Packet():
+class Packet:
     @staticmethod
     def from_string(data: str) -> "Packet | None":
         parts = data_from_string(data)
@@ -79,7 +79,9 @@ class Packet():
                     )
                 case "TK":  # Token
                     if len(parts) == 3:
-                        return GetData(device_id=int(parts[1]), row_number=int(parts[2]))
+                        return GetData(
+                            device_id=int(parts[1]), row_number=int(parts[2])
+                        )
                     elif len(parts) == 2:
                         return GiveToken(device_id=int(parts[1]))
                 case "EV":  # Event and Heat
@@ -101,19 +103,21 @@ class Packet():
                             channel=int(parts[4]),
                             record_type=parts[5],
                             user_string=parts[6],
-                            time=datetime.datetime.strptime(parts[7], "%H:%M:%S.%f").time(),
+                            time=datetime.datetime.strptime(
+                                parts[7], "%H:%M:%S.%f"
+                            ).time(),
                         )
                     except ValueError:
                         pass
         return None
-    
+
     @abstractmethod
     def _to_payload(self) -> str:
         raise NotImplementedError()
-    
+
     def to_string(self) -> str:
         return wrap_payload(self._to_payload())
-    
+
 
 @dataclass
 class Reset(Packet):
@@ -194,4 +198,4 @@ class DataAck(Packet):
     time: datetime.time
 
     def _to_payload(self) -> str:
-        return f"{self.device_id}\t{self.record_number}\t{self.event_number}\t{self.heat_number}\t{self.channel}\t{self.record_type}\t{self.user_string}\t{self.time.strftime('%H:%M:%S') + f'.{int(self.time.microsecond/100000)}'}"
+        return f"{self.device_id}\t{self.record_number}\t{self.event_number}\t{self.heat_number}\t{self.channel}\t{self.record_type}\t{self.user_string}\t{self.time.strftime('%H:%M:%S') + f'.{int(self.time.microsecond / 100000)}'}"
