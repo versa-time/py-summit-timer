@@ -32,7 +32,11 @@ def data_from_string(data: str) -> list[str] | None:
             content = data[1:end]
             crc = data[end + 1 :]
             if validate_crc(content, crc.strip()) and "\t" in content:
-                return content.split("\t")
+                # Data packets are tab-separated 
+                if "\t" in content:
+                    return content.split("\t")
+                # Command and Response packets are space-separated
+                return content.split(" ")
 
     return None
 

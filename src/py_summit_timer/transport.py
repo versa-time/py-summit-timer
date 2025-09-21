@@ -1,0 +1,36 @@
+import serial
+
+class Transport:
+    def __init__(self, port: str, baudrate: int = 9600, timeout: float = 1.0):
+        self.port = port
+        self.baudrate = baudrate
+        self.timeout = timeout
+        self.connection = None
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
+    def open(self):
+        if self.connection is None or not self.connection.is_open:
+            self.connection = serial.Serial(self.port, self.baudrate, timeout=self.timeout)
+
+    def close(self):
+        if self.connection and self.connection.is_open:
+            self.connection.close()
+
+    def send(self, data: str):
+        if self.connection and self.connection.is_open:
+            self.connection.write(data.encode())
+        else:
+            raise ConnectionError("Transport connection is not open.")
+
+    def receive(self) -> str:
+        if self.connection and self.connection.is_open:
+            line = self.connection.readline()
+            return line.decode().rstrip('\r\n')
+        else:
+            raise ConnectionError("Transport connection is not open.")
