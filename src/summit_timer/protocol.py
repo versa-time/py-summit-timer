@@ -77,7 +77,10 @@ class Packet():
                         second=float(timestamp_split[2]),
                     )
                 case "TK":  # Token
-                    return GiveToken(device_id=int(parts[1]))
+                    if len(parts) == 3:
+                        return GetData(device_id=int(parts[1]), row_number=int(parts[2]))
+                    elif len(parts) == 2:
+                        return GiveToken(device_id=int(parts[1]))
                 case "EV":  # Event and Heat
                     return SetEventAndHeat(
                         device_id=int(parts[1]),
