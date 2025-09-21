@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from typing import Generator
-        
+
+
 class Packet:
     @staticmethod
-    def from_parts(parts: list[str]) -> 'Packet | None':
+    def from_parts(parts: list[str]) -> "Packet | None":
         if len(parts) >= 1:
             match parts[0]:
                 case "RS":  # Reset / Disable Reset
@@ -59,9 +59,11 @@ class Packet:
 class Reset(Packet):
     pass
 
+
 @dataclass
 class DisableReset(Packet):
     pass
+
 
 @dataclass
 class Synch(Packet):
@@ -69,20 +71,24 @@ class Synch(Packet):
     minute: int
     second: float
 
+
 @dataclass
 class SynchOffset(Packet):
     hour: int
     minute: int
     second: float
 
+
 @dataclass
 class GiveToken(Packet):
     device_id: int
+
 
 @dataclass
 class GetData(Packet):
     device_id: int
     row_number: int
+
 
 @dataclass
 class SetEventAndHeat(Packet):
@@ -90,9 +96,11 @@ class SetEventAndHeat(Packet):
     event_number: int
     heat_number: int
 
+
 @dataclass
 class Ack(Packet):
     device_id: int
+
 
 @dataclass
 class DataAck(Packet):
