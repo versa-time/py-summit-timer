@@ -32,7 +32,7 @@ def data_from_string(data: str) -> list[str] | None:
         if end != -1:
             content = data[1:end]
             crc = data[end + 1 :]
-            if validate_crc(content, crc.strip()) and "\t" in content:
+            if validate_crc(content, crc.strip()):
                 # Data packets are tab-separated 
                 if "\t" in content:
                     return content.split("\t")
@@ -45,13 +45,14 @@ def data_from_string(data: str) -> list[str] | None:
 def wrap_payload(payload: str) -> str:
     """Wrap a payload in the CRC format."""
     crc = CRC_CALCULATOR.checksum(payload.encode())
-    return f"{{{payload}}}{crc:04X}"
+    return f"{{{payload}}}{crc:04x}"
 
 
 class Packet():
     @staticmethod
     def from_string(data: str) -> "Packet | None":
         parts = data_from_string(data)
+        print(parts)
         if parts:
             match parts[0]:
                 case "RS":  # Reset / Disable Reset
