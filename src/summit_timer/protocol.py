@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from abc import abstractmethod
 from crc import Calculator, Configuration
+import datetime
 
 CRC_CONFIG = Configuration(
     width=16,
@@ -100,7 +101,7 @@ class Packet():
                             channel=int(parts[4]),
                             record_type=parts[5],
                             user_string=parts[6],
-                            time=parts[7],
+                            time=datetime.datetime.strptime(parts[7], "%H:%M:%S.%f").time(),
                         )
                     except ValueError:
                         pass
@@ -190,7 +191,7 @@ class DataAck(Packet):
     channel: int
     record_type: str
     user_string: str
-    time: str
+    time: datetime.time
 
     def _to_payload(self) -> str:
-        return f"{self.device_id}\t{self.record_number}\t{self.event_number}\t{self.heat_number}\t{self.channel}\t{self.record_type}\t{self.user_string}\t{self.time}"
+        return f"{self.device_id}\t{self.record_number}\t{self.event_number}\t{self.heat_number}\t{self.channel}\t{self.record_type}\t{self.user_string}\t{self.time.strftime('%H:%M:%S') + f'.{int(self.time.microsecond/100000)}'}"
