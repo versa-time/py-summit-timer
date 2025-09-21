@@ -1,5 +1,7 @@
 import serial
 
+from summit_timer.protocol import Packet
+
 class Transport:
     def __init__(self, port: str, baudrate: int = 9600, timeout: float = 1.0):
         self.port = port
@@ -22,9 +24,11 @@ class Transport:
         if self.connection and self.connection.is_open:
             self.connection.close()
 
-    def send(self, data: str):
+    def send(self, data: str | Packet):
         if self.connection and self.connection.is_open:
-            self.connection.write(data.encode())
+            if isinstance(data, Packet):
+                data = data.to_string()
+            self.connection.write(data.encode() + b'\r\n')
         else:
             raise ConnectionError("Transport connection is not open.")
 
