@@ -115,7 +115,7 @@ class Packet:
     def _to_payload(self) -> str:
         raise NotImplementedError()
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         return wrap_payload(self._to_payload())
 
 

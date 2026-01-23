@@ -30,7 +30,7 @@ class Transport:
     def send(self, data: str | Packet):
         if self.connection and self.connection.is_open:
             if isinstance(data, Packet):
-                data = data.to_string()
+                data = str(data)
             self.connection.write(data.encode() + b"\r\n")
         else:
             raise ConnectionError("Transport connection is not open.")
