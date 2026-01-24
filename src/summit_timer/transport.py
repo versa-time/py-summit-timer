@@ -35,9 +35,9 @@ class Transport:
         else:
             raise ConnectionError("Transport connection is not open.")
 
-    def receive(self) -> str:
+    def receive(self) -> Packet:
         if self.connection and self.connection.is_open:
             line = self.connection.readline()
-            return line.decode().rstrip("\r\n")
+            return Packet.from_string(line.decode().rstrip("\r\n"))
         else:
             raise ConnectionError("Transport connection is not open.")

@@ -62,19 +62,21 @@ class Packet:
                     elif len(parts) == 2 and parts[1] == "x":
                         return DisableReset()
                 case "SY":  # Synchronize
-                    timestamp = parts[1]
-                    timestamp_split = timestamp.split(":")
-                    return Synch(
-                        hour=int(timestamp_split[0]),
-                        minute=int(timestamp_split[1]),
-                        second=float(timestamp_split[2]),
-                    )
+                    if len(parts) == 3:
+                        timestamp = parts[1]
+                        timestamp_split = timestamp.split(":")
+                        return Synch(
+                            hour=int(timestamp_split[0]),
+                            minute=int(timestamp_split[1]),
+                            second=float(timestamp_split[2]),
+                        )
                 case "SYO":  # Synchronize Offset
-                    timestamp = parts[1]
-                    timestamp_split = timestamp.split(":")
-                    return SynchOffset(
-                        hour=int(timestamp_split[0]),
-                        minute=int(timestamp_split[1]),
+                    if len(parts) == 3:
+                        timestamp = parts[1]
+                        timestamp_split = timestamp.split(":")
+                        return SynchOffset(
+                            hour=int(timestamp_split[0]),
+                            minute=int(timestamp_split[1]),
                         second=float(timestamp_split[2]),
                     )
                 case "TK":  # Token
@@ -85,13 +87,15 @@ class Packet:
                     elif len(parts) == 2:
                         return GiveToken(device_id=int(parts[1]))
                 case "EV":  # Event and Heat
-                    return SetEventAndHeat(
-                        device_id=int(parts[1]),
-                        event_number=int(parts[2]),
-                        heat_number=int(parts[3]),
-                    )
+                    if len(parts) == 4:
+                        return SetEventAndHeat(
+                            device_id=int(parts[1]),
+                            event_number=int(parts[2]),
+                            heat_number=int(parts[3]),
+                        )
                 case "AK":  # Acknowledge
-                    return Ack(device_id=int(parts[1]))
+                    if len(parts) == 2:
+                        return Ack(device_id=int(parts[1]))
                 case _:
                     try:
                         int(parts[0])  # This is a data packet

@@ -1,3 +1,8 @@
+# TODO
+- [ ] Synch
+- [ ] Disable Reset
+- [ ] Reset
+
 # py-summit-timer
 
 Following are commands from PC to Timer
