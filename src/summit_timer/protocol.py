@@ -98,7 +98,7 @@ class Packet:
                         return Ack(device_id=int(parts[1]))
                 case _:
                     try:
-                        int(parts[0])  # This is a data packet
+                        int(parts[0])  # This is a data packet ( which has no packet code D: )
                         return DataAck(
                             device_id=int(parts[0]),
                             record_number=int(parts[1]),

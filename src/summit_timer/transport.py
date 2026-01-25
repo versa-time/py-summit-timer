@@ -1,3 +1,4 @@
+from typing import Iterator
 import serial
 
 from summit_timer.protocol import Packet
@@ -18,10 +19,13 @@ class Transport:
         self.close()
 
     def open(self):
-        if self.connection is None or not self.connection.is_open:
-            self.connection = serial.Serial(
-                self.port, self.baudrate, timeout=self.timeout
-            )
+        if self.port:
+            if self.connection is None or not self.connection.is_open:
+                self.connection = serial.Serial(
+                    self.port, self.baudrate, timeout=self.timeout
+                )
+        else:
+            raise ValueError("Port must be specified to open transport.")
 
     def close(self):
         if self.connection and self.connection.is_open:
@@ -35,9 +39,10 @@ class Transport:
         else:
             raise ConnectionError("Transport connection is not open.")
 
-    def receive(self) -> Packet:
+    def receive(self) -> Iterator[Packet]:
         if self.connection and self.connection.is_open:
-            line = self.connection.readline()
-            return Packet.from_string(line.decode().rstrip("\r\n"))
+            while self.connection.in_waiting > 0:
+                line = self.connection.readline().decode(encoding="ascii")
+                yield Packet.from_string(line.rstrip("\r\n"))
         else:
             raise ConnectionError("Transport connection is not open.")
