@@ -5,10 +5,25 @@
 groups = ["default", "dev", "gui"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:e05730c51fcf65981957f78bcb3472c2093f9d5365b32835a6f81209b7ef806e"
+content_hash = "sha256:def7975a80df493fb32c3c43d0686c65a945910c35c82f1a7afdb83c35ed925d"
 
 [[metadata.targets]]
 requires_python = ">=3.13,<3.14"
+
+[[package]]
+name = "appscript"
+version = "1.4.0"
+summary = "Control AppleScriptable applications from Python."
+groups = ["gui"]
+marker = "platform_system == \"Darwin\""
+dependencies = [
+    "lxml>=4.7.1",
+]
+files = [
+    {file = "appscript-1.4.0-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:7710db497d279d819f487dea686866b56c6c1e557befef4631b78553c523334c"},
+    {file = "appscript-1.4.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:0396978b95e06c2cabba117cc172add1df188c51a1b80fc6648aad16890a84c8"},
+    {file = "appscript-1.4.0.tar.gz", hash = "sha256:b2c6fc770bf822ea45529c7084bc0ee340e67ab260016b01d28e0449ec8723be"},
+]
 
 [[package]]
 name = "colorama"
@@ -56,6 +71,35 @@ files = [
 ]
 
 [[package]]
+name = "lxml"
+version = "6.1.0"
+requires_python = ">=3.8"
+summary = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
+groups = ["gui"]
+marker = "platform_system == \"Darwin\""
+files = [
+    {file = "lxml-6.1.0-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:a0092f2b107b69601adf562a57c956fbb596e05e3e6651cabd3054113b007e45"},
+    {file = "lxml-6.1.0-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:fc7140d7a7386e6b545d41b7358f4d02b656d4053f5fa6859f92f4b9c2572c4d"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:419c58fc92cc3a2c3fa5f78c63dbf5da70c1fa9c1b25f25727ecee89a96c7de2"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:37fabd1452852636cf38ecdcc9dd5ca4bba7a35d6c53fa09725deeb894a87491"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a2853c8b2170cc6cd54a6b4d50d2c1a8a7aeca201f23804b4898525c7a152cfc"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux_2_26_ppc64le.manylinux_2_28_ppc64le.whl", hash = "sha256:8e369cbd690e788c8d15e56222d91a09c6a417f49cbc543040cba0fe2e25a79e"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e69aa6805905807186eb00e66c6d97a935c928275182eb02ee40ba00da9623b2"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux_2_28_i686.whl", hash = "sha256:4bd1bdb8a9e0e2dd229de19b5f8aebac80e916921b4b2c6ef8a52bc131d0c1f9"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux_2_31_armv7l.whl", hash = "sha256:cbd7b79cdcb4986ad78a2662625882747f09db5e4cd7b2ae178a88c9c51b3dfe"},
+    {file = "lxml-6.1.0-cp313-cp313-manylinux_2_38_riscv64.manylinux_2_39_riscv64.whl", hash = "sha256:43e4d297f11080ec9d64a4b1ad7ac02b4484c9f0e2179d9c4ef78e886e747b88"},
+    {file = "lxml-6.1.0-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:cc16682cc987a3da00aa56a3aa3075b08edb10d9b1e476938cfdbee8f3b67181"},
+    {file = "lxml-6.1.0-cp313-cp313-musllinux_1_2_armv7l.whl", hash = "sha256:d6d8efe71429635f0559579092bb5e60560d7b9115ee38c4adbea35632e7fa24"},
+    {file = "lxml-6.1.0-cp313-cp313-musllinux_1_2_ppc64le.whl", hash = "sha256:7e39ab3a28af7784e206d8606ec0e4bcad0190f63a492bca95e94e5a4aef7f6e"},
+    {file = "lxml-6.1.0-cp313-cp313-musllinux_1_2_riscv64.whl", hash = "sha256:9eb667bf50856c4a58145f8ca2d5e5be160191e79eb9e30855a476191b3c3495"},
+    {file = "lxml-6.1.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:7f4a77d6f7edf9230cee3e1f7f6764722a41604ee5681844f18db9a81ea0ec33"},
+    {file = "lxml-6.1.0-cp313-cp313-win32.whl", hash = "sha256:28902146ffbe5222df411c5d19e5352490122e14447e98cd118907ee3fd6ee62"},
+    {file = "lxml-6.1.0-cp313-cp313-win_amd64.whl", hash = "sha256:4a1503c56e4e2b38dc76f2f2da7bae69670c0f1933e27cfa34b2fa5876410b16"},
+    {file = "lxml-6.1.0-cp313-cp313-win_arm64.whl", hash = "sha256:e0af85773850417d994d019741239b901b22c6680206f46a34766926e466141d"},
+    {file = "lxml-6.1.0.tar.gz", hash = "sha256:bfd57d8008c4965709a919c3e9a98f76c2c7cb319086b3d26858250620023b13"},
+]
+
+[[package]]
 name = "openpyxl"
 version = "3.1.5"
 requires_python = ">=3.8"
@@ -89,6 +133,31 @@ groups = ["dev"]
 files = [
     {file = "pluggy-1.6.0-py3-none-any.whl", hash = "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"},
     {file = "pluggy-1.6.0.tar.gz", hash = "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3"},
+]
+
+[[package]]
+name = "psutil"
+version = "7.2.2"
+requires_python = ">=3.6"
+summary = "Cross-platform lib for process and system monitoring."
+groups = ["gui"]
+marker = "platform_system == \"Darwin\""
+files = [
+    {file = "psutil-7.2.2-cp313-cp313t-macosx_10_13_x86_64.whl", hash = "sha256:2edccc433cbfa046b980b0df0171cd25bcaeb3a68fe9022db0979e7aa74a826b"},
+    {file = "psutil-7.2.2-cp313-cp313t-macosx_11_0_arm64.whl", hash = "sha256:e78c8603dcd9a04c7364f1a3e670cea95d51ee865e4efb3556a3a63adef958ea"},
+    {file = "psutil-7.2.2-cp313-cp313t-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:1a571f2330c966c62aeda00dd24620425d4b0cc86881c89861fbc04549e5dc63"},
+    {file = "psutil-7.2.2-cp313-cp313t-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:917e891983ca3c1887b4ef36447b1e0873e70c933afc831c6b6da078ba474312"},
+    {file = "psutil-7.2.2-cp313-cp313t-win_amd64.whl", hash = "sha256:ab486563df44c17f5173621c7b198955bd6b613fb87c71c161f827d3fb149a9b"},
+    {file = "psutil-7.2.2-cp313-cp313t-win_arm64.whl", hash = "sha256:ae0aefdd8796a7737eccea863f80f81e468a1e4cf14d926bd9b6f5f2d5f90ca9"},
+    {file = "psutil-7.2.2-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:ed0cace939114f62738d808fdcecd4c869222507e266e574799e9c0faa17d486"},
+    {file = "psutil-7.2.2-cp36-abi3-macosx_11_0_arm64.whl", hash = "sha256:1a7b04c10f32cc88ab39cbf606e117fd74721c831c98a27dc04578deb0c16979"},
+    {file = "psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:076a2d2f923fd4821644f5ba89f059523da90dc9014e85f8e45a5774ca5bc6f9"},
+    {file = "psutil-7.2.2-cp36-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:b0726cecd84f9474419d67252add4ac0cd9811b04d61123054b9fb6f57df6e9e"},
+    {file = "psutil-7.2.2-cp36-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:fd04ef36b4a6d599bbdb225dd1d3f51e00105f6d48a28f006da7f9822f2606d8"},
+    {file = "psutil-7.2.2-cp36-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:b58fabe35e80b264a4e3bb23e6b96f9e45a3df7fb7eed419ac0e5947c61e47cc"},
+    {file = "psutil-7.2.2-cp37-abi3-win_amd64.whl", hash = "sha256:eb7e81434c8d223ec4a219b5fc1c47d0417b12be7ea866e24fb5ad6e84b3d988"},
+    {file = "psutil-7.2.2-cp37-abi3-win_arm64.whl", hash = "sha256:8c233660f575a5a89e6d4cb65d9f938126312bca76d8fe087b947b3a1aaac9ee"},
+    {file = "psutil-7.2.2.tar.gz", hash = "sha256:0746f5f8d406af344fd547f1c8daa5f5c33dbc293bb8d6a16d80b4bb88f59372"},
 ]
 
 [[package]]
@@ -187,6 +256,18 @@ files = [
 ]
 
 [[package]]
+name = "pywin32"
+version = "311"
+summary = "Python for Window Extensions"
+groups = ["gui"]
+marker = "platform_system == \"Windows\""
+files = [
+    {file = "pywin32-311-cp313-cp313-win32.whl", hash = "sha256:f95ba5a847cba10dd8c4d8fefa9f2a6cf283b8b88ed6178fa8a6c1ab16054d0d"},
+    {file = "pywin32-311-cp313-cp313-win_amd64.whl", hash = "sha256:718a38f7e5b058e76aee1c56ddd06908116d35147e133427e59a3983f703a20d"},
+    {file = "pywin32-311-cp313-cp313-win_arm64.whl", hash = "sha256:7b4075d959648406202d92a2310cb990fea19b535c7f4a78d3f5e10b926eeb8a"},
+]
+
+[[package]]
 name = "ruff"
 version = "0.13.1"
 requires_python = ">=3.7"
@@ -226,4 +307,28 @@ files = [
     {file = "shiboken6-6.10.1-cp39-abi3-manylinux_2_39_aarch64.whl", hash = "sha256:c095b00f4d6bf578c0b2464bb4e264b351a99345374478570f69e2e679a2a1d0"},
     {file = "shiboken6-6.10.1-cp39-abi3-win_amd64.whl", hash = "sha256:c1601d3cda1fa32779b141663873741b54e797cb0328458d7466281f117b0a4e"},
     {file = "shiboken6-6.10.1-cp39-abi3-win_arm64.whl", hash = "sha256:5cf800917008587b551005a45add2d485cca66f5f7ecd5b320e9954e40448cc9"},
+]
+
+[[package]]
+name = "xlwings"
+version = "0.35.2"
+requires_python = ">=3.9"
+summary = "Make Excel fly: Interact with Excel from Python and vice versa."
+groups = ["gui"]
+dependencies = [
+    "appscript>=1.0.1; platform_system == \"Darwin\"",
+    "psutil>=2.0.0; platform_system == \"Darwin\"",
+    "pywin32>=224; platform_system == \"Windows\"",
+]
+files = [
+    {file = "xlwings-0.35.2-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:08f124a80ba2d48c2182436b6d20b2fae9d5e50fee8f6512dd67a09cb1b8d4ae"},
+    {file = "xlwings-0.35.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:0bd95a756935d942671692f5fd5dc08a093753bf8fe9038417d6f10d13d8d3b8"},
+    {file = "xlwings-0.35.2-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:27584ad9da81712308f0085a4bf2be1bb9f0619e5b0e5ca791aa88fff28dcb54"},
+    {file = "xlwings-0.35.2-cp313-cp313-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:06b60ce0a0babfa008ca93e6c45b804f84ed7a181f6b02fd1169ffb7eba306d4"},
+    {file = "xlwings-0.35.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9cc6797e0f0b89fa3506f0d436e50f7b929306395054d43254927c05c3cbda2c"},
+    {file = "xlwings-0.35.2-cp313-cp313-musllinux_1_1_aarch64.whl", hash = "sha256:5f34f43e1d41e97fbf82a2abef5341ad4d098c1b529459438945719e694a0760"},
+    {file = "xlwings-0.35.2-cp313-cp313-musllinux_1_1_x86_64.whl", hash = "sha256:75623251e714532fffb2a93d02ed57897c1b2d6299da25a4bc8fe830ef53b3f1"},
+    {file = "xlwings-0.35.2-cp313-cp313-win_amd64.whl", hash = "sha256:874a2f91c4b6dad497d88285ba1e0577093379a93f6eec60da7bbdbaf9cefffa"},
+    {file = "xlwings-0.35.2-py3-none-any.whl", hash = "sha256:c59c2dc9dc7c4df04e1b83ce21d8b6d5e484415d85a04bd34c22cab65c91c61f"},
+    {file = "xlwings-0.35.2.tar.gz", hash = "sha256:43b31d923e4f5c0820bbc16d061f251003101a873e1639e195ca8ccfdd1f5f8b"},
 ]

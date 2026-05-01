@@ -17,6 +17,7 @@ dev = [
 ]
 gui = [
     "PySide6>=6.10.1",
+    "xlwings>=0.33.16",
 ]
 
 [tool.pdm.scripts]

@@ -196,7 +196,12 @@ class TimerManager(QGroupBox):
                     "Select an Excel file before polling"
                 )
                 return
-            writer.append_records(new_records)
+            try:
+                writer.append_records(new_records)
+            except Exception as exc:
+                self.auto_poll_button.setChecked(False)
+                self.connection_status_label.setText(f"Excel write failed: {exc}")
+                return
 
         latest_record = self.record_store.latest_record_number(device_id)
         timer_widget.update_record_state(
