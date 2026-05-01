@@ -11,6 +11,9 @@ readme = "README.md"
 license = {text = "MIT"}
 
 [project.optional-dependencies]
+build = [
+    "pyinstaller>=6.15",
+]
 dev = [
     "pytest>=8.4.2",
     "ruff>=0.13.1",
@@ -20,7 +23,11 @@ gui = [
     "xlwings>=0.33.16",
 ]
 
+[project.scripts]
+summit-link = "summit_link.launcher:main"
+
 [tool.pdm.scripts]
+build-app = "pyinstaller --noconfirm --clean --windowed --onedir --name SummitLink src/summit_link/launcher.py"
 format = "pdm run ruff format"
 lint-fix = "pdm run ruff check --fix"
 

@@ -1,9 +1,6 @@
-from .app import App
 import sys
-from PySide6.QtWidgets import QApplication
+
+from summit_link.launcher import main
 
 if __name__ == "__main__":
-    q_app = QApplication([])
-    app = App()
-    app.show()
-    sys.exit(q_app.exec())
+    sys.exit(main())
