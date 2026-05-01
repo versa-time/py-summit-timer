@@ -1,6 +1,16 @@
 from serial.tools import list_ports
-from PySide6.QtWidgets import QComboBox, QPushButton, QVBoxLayout, QHBoxLayout, QGroupBox
+from PySide6.QtWidgets import (
+    QComboBox,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QGroupBox,
+)
 from PySide6.QtCore import Signal
+
+from summit_timer.transport import EMULATOR_PORT
+
+EMULATOR_LABEL = "Summit Emulator"
 
 
 class SerialManager(QGroupBox):
@@ -32,14 +42,15 @@ class SerialManager(QGroupBox):
     def refresh_ports(self):
         current_port = self.port_combo.currentText()
         self.port_combo.clear()
+        self.port_combo.addItem(EMULATOR_LABEL, EMULATOR_PORT)
 
         ports = sorted(list_ports.comports(), key=lambda port: port.device)
-        available_ports = []
+        available_ports = [EMULATOR_LABEL]
         for port in ports:
             # Only show usb or rs-232 ports
             if port.vid is not None or "RS-232" in port.description:
                 available_ports.append(port.device)
-                self.port_combo.addItem(port.device)
+                self.port_combo.addItem(port.device, port.device)
 
         has_ports = bool(available_ports)
         self.port_combo.setEnabled(has_ports)
@@ -49,9 +60,10 @@ class SerialManager(QGroupBox):
             self.port_combo.setCurrentText(current_port)
 
     def request_connect(self):
-        if not self.port_combo.currentText():
+        port = self.port_combo.currentData()
+        if not port:
             return
-        self.connect_signal.emit(self.port_combo.currentText())
+        self.connect_signal.emit(port)
 
     def request_disconnect(self):
         self.disconnect_signal.emit()

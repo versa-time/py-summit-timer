@@ -1,7 +1,10 @@
 from typing import Iterator
 import serial
 
+from summit_timer.emulator import EmulatorSerial
 from summit_timer.protocol import Packet
+
+EMULATOR_PORT = "emulator://summit"
 
 
 class Transport:
@@ -21,9 +24,12 @@ class Transport:
     def open(self):
         if self.port:
             if self.connection is None or not self.connection.is_open:
-                self.connection = serial.Serial(
-                    self.port, self.baudrate, timeout=self.timeout
-                )
+                if self.port == EMULATOR_PORT:
+                    self.connection = EmulatorSerial(timeout=self.timeout)
+                else:
+                    self.connection = serial.Serial(
+                        self.port, self.baudrate, timeout=self.timeout
+                    )
         else:
             raise ValueError("Port must be specified to open transport.")
 
