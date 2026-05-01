@@ -1,7 +1,8 @@
-from dataclasses import dataclass
 from abc import abstractmethod
-from crc import Calculator, Configuration
+from dataclasses import dataclass
 import datetime
+
+from crc import Calculator, Configuration
 
 CRC_CONFIG = Configuration(
     width=16,
@@ -38,7 +39,7 @@ def data_from_string(data: str) -> list[str] | None:
                 if "\t" in content:
                     return content.split("\t")
                 # Command and Response packets are space-separated
-                return content.split(" ")
+                return content.split()
 
     return None
 
@@ -49,70 +50,65 @@ def wrap_payload(payload: str) -> str:
     return f"{{{payload}}}{crc:04x}"
 
 
+def parse_timer_time(value: str) -> tuple[int, int, float]:
+    """Parse the timer's hour:minute:second time format."""
+    hour, minute, second = value.split(":")
+    return int(hour), int(minute), float(second)
+
+
 class Packet:
     @staticmethod
     def from_string(data: str) -> "Packet | None":
         parts = data_from_string(data)
-        print(parts)
         if parts:
-            match parts[0]:
-                case "RS":  # Reset / Disable Reset
-                    if len(parts) == 1:
-                        return Reset()
-                    elif len(parts) == 2 and parts[1] == "x":
-                        return DisableReset()
-                case "SY":  # Synchronize
-                    if len(parts) == 3:
-                        timestamp = parts[1]
-                        timestamp_split = timestamp.split(":")
-                        return Synch(
-                            hour=int(timestamp_split[0]),
-                            minute=int(timestamp_split[1]),
-                            second=float(timestamp_split[2]),
-                        )
-                case "SYO":  # Synchronize Offset
-                    if len(parts) == 3:
-                        timestamp = parts[1]
-                        timestamp_split = timestamp.split(":")
-                        return SynchOffset(
-                            hour=int(timestamp_split[0]),
-                            minute=int(timestamp_split[1]),
-                        second=float(timestamp_split[2]),
-                    )
-                case "TK":  # Token
-                    if len(parts) == 3:
-                        return GetData(
-                            device_id=int(parts[1]), row_number=int(parts[2])
-                        )
-                    elif len(parts) == 2:
-                        return GiveToken(device_id=int(parts[1]))
-                case "EV":  # Event and Heat
-                    if len(parts) == 4:
-                        return SetEventAndHeat(
-                            device_id=int(parts[1]),
-                            event_number=int(parts[2]),
-                            heat_number=int(parts[3]),
-                        )
-                case "AK":  # Acknowledge
-                    if len(parts) == 2:
-                        return Ack(device_id=int(parts[1]))
-                case _:
-                    try:
-                        int(parts[0])  # This is a data packet ( which has no packet code D: )
-                        return DataAck(
-                            device_id=int(parts[0]),
-                            record_number=int(parts[1]),
-                            event_number=int(parts[2]),
-                            heat_number=int(parts[3]),
-                            channel=int(parts[4]),
-                            record_type=parts[5],
-                            user_string=parts[6],
-                            time=datetime.datetime.strptime(
-                                parts[7], "%H:%M:%S.%f"
-                            ).time(),
-                        )
-                    except ValueError:
-                        pass
+            try:
+                match parts[0]:
+                    case "RS":  # Reset / Disable Reset
+                        if len(parts) == 1:
+                            return Reset()
+                        if len(parts) == 2 and parts[1] == "x":
+                            return DisableReset()
+                    case "SY":  # Synchronize
+                        if len(parts) == 2:
+                            hour, minute, second = parse_timer_time(parts[1])
+                            return Synch(hour=hour, minute=minute, second=second)
+                    case "SYO":  # Synchronize Offset
+                        if len(parts) == 2:
+                            hour, minute, second = parse_timer_time(parts[1])
+                            return SynchOffset(hour=hour, minute=minute, second=second)
+                    case "TK":  # Token
+                        if len(parts) == 3:
+                            return GetData(
+                                device_id=int(parts[1]), row_number=int(parts[2])
+                            )
+                        if len(parts) == 2:
+                            return GiveToken(device_id=int(parts[1]))
+                    case "EV":  # Event and Heat
+                        if len(parts) == 4:
+                            return SetEventAndHeat(
+                                device_id=int(parts[1]),
+                                event_number=int(parts[2]),
+                                heat_number=int(parts[3]),
+                            )
+                    case "AK":  # Acknowledge
+                        if len(parts) == 2:
+                            return Ack(device_id=int(parts[1]))
+                    case _:
+                        if len(parts) == 8:
+                            return DataAck(
+                                device_id=int(parts[0]),
+                                record_number=int(parts[1]),
+                                event_number=int(parts[2]),
+                                heat_number=int(parts[3]),
+                                channel=int(parts[4]),
+                                record_type=parts[5],
+                                user_string=parts[6],
+                                time=datetime.datetime.strptime(
+                                    parts[7], "%H:%M:%S.%f"
+                                ).time(),
+                            )
+            except (IndexError, ValueError):
+                pass
         return None
 
     @abstractmethod
@@ -126,7 +122,7 @@ class Packet:
 @dataclass
 class Reset(Packet):
     def _to_payload(self) -> str:
-        return "RS"
+        return "RS "
 
 
 @dataclass

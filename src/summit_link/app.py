@@ -1,23 +1,29 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QMessageBox
-from .timer_manager import TimerManager
-from .serial_manager import SerialManager
 from importlib.metadata import version
-from ..summit_timer.transport import Transport
+
+from PySide6.QtWidgets import QMessageBox, QVBoxLayout, QWidget
+
 from .data_writer import DataWriter
+from .serial_manager import SerialManager
+from .timer_manager import TimerManager
+from summit_timer.transport import Transport
+
 
 class App(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle(f"Summit Link App - v{version('py-summit-timer')}")  # name and version
+        self.setWindowTitle(
+            f"Summit Link App - v{version('py-summit-timer')}"
+        )  # name and version
         layout = QVBoxLayout()
         self.setLayout(layout)
         # Add widgets
         self.transport = Transport("")
         self.serial_manager = SerialManager()
-        self.timer_manager = TimerManager(self.transport)
+        self.data_writer = DataWriter()
+        self.timer_manager = TimerManager(self.transport, self.data_writer)
         layout.addWidget(self.serial_manager)
         layout.addWidget(self.timer_manager)
-        layout.addWidget(DataWriter())
+        layout.addWidget(self.data_writer)
 
         self.serial_manager.connect_signal.connect(self.connect_transport)
         self.serial_manager.disconnect_signal.connect(self.disconnect_transport)

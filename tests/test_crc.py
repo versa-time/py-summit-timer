@@ -1,4 +1,4 @@
-from src.summit_timer import protocol as proto
+from summit_timer import protocol as proto
 import datetime
 
 
@@ -9,18 +9,6 @@ def test_crc_ack():
 
 
 def test_crc_data():
-    print(
-        str(proto.DataAck(
-            device_id=12,
-            record_number=34,
-            event_number=56,
-            heat_number=78,
-            channel=9,
-            record_type="b",
-            user_string="9999",
-            time=datetime.datetime.strptime("12:34:56.7", "%H:%M:%S.%f").time(),
-        ))
-    )
     assert proto.Packet.from_string(
         "{12\t34\t56\t78\t9\tb\t9999\t12:34:56.7}4e72"
     ) == proto.DataAck(
