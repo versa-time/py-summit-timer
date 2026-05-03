@@ -27,7 +27,7 @@ gui = [
 summit-link = "summit_link.launcher:main"
 
 [tool.pdm.scripts]
-build-app = "pyinstaller --noconfirm --clean --windowed --onedir --name SummitLink src/summit_link/launcher.py"
+build-app = "python scripts/build_app.py"
 format = "pdm run ruff format"
 lint-fix = "pdm run ruff check --fix"
 
