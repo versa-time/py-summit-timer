@@ -71,6 +71,9 @@ class DataWriter(QGroupBox):
             self._writer_key = writer_key
         return self._writer
 
+    def has_file_selected(self) -> bool:
+        return bool(self.file_path)
+
     def current_sheet_name(self) -> str:
         return self.sheet_name_input.text().strip() or DEFAULT_SHEET_NAME
 
