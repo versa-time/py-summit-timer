@@ -3,6 +3,7 @@ import summit_timer.protocol as proto
 import time
 
 MAX_DEVICES = 16
+DISCOVERY_ROW_NUMBER = 1
 
 
 class SummitTimerClient:
@@ -13,18 +14,22 @@ class SummitTimerClient:
     def ping_host(self, device_id: int, timeout: float = 0.1) -> bool:
         """Ping a device to see if it is connected."""
         self.transport.clear_input_buffer()
-        self.transport.send(proto.GiveToken(device_id))
+        self.transport.send(proto.GetData(device_id, DISCOVERY_ROW_NUMBER))
         response = self.transport.read_packet(timeout=timeout)
-        return isinstance(response, proto.Ack) and response.device_id == device_id
+        return (
+            isinstance(response, proto.Ack | proto.DataAck)
+            and response.device_id == device_id
+        )
 
     def discover_devices(
-        self, start_device_id: int = 0, end_device_id: int = 255, timeout: float = 0.1
+        self, start_device_id: int = 1, end_device_id: int = 255, timeout: float = 0.1
     ) -> list[int]:
         """Discover connected devices by requesting an ACK from each device ID."""
         discovered_devices = []
         for device_id in range(start_device_id, end_device_id + 1):
             if self.ping_host(device_id, timeout=timeout):
                 discovered_devices.append(device_id)
+        self.transport.clear_input_buffer()
         return discovered_devices
 
     def set_event_and_heat(
@@ -65,6 +70,7 @@ class SummitTimerClient:
         quiet_delay: float = 0.05,
     ) -> list[proto.DataAck]:
         """Silence the bus, then request records from one device."""
+        self.transport.clear_input_buffer()
         self.stop_all_devices()
         if quiet_delay > 0:
             time.sleep(quiet_delay)

@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
-    QLineEdit,
     QPushButton,
     QScrollArea,
     QSpinBox,
@@ -17,10 +16,10 @@ from summit_timer.client import SummitTimerClient
 from summit_timer.record_store import RecordStore
 from summit_timer.transport import Transport
 
-DISCOVER_MIN_DEVICE_ID = 0
-DISCOVER_MAX_DEVICE_ID = 50
-DISCOVER_TIMEOUT_SECONDS = 0.1
-POLL_TIMEOUT_SECONDS = 0.2
+DISCOVER_MIN_DEVICE_ID = 1
+DISCOVER_MAX_DEVICE_ID = 20
+DISCOVER_TIMEOUT_SECONDS = 0.2
+POLL_TIMEOUT_SECONDS = 0.1
 POLL_QUIET_DELAY_SECONDS = 0.05
 
 
@@ -32,16 +31,11 @@ class TimerWidget(QWidget):
         self.setLayout(layout)
         self.device_label = QLabel("Device Num")
         self.device_num_input = QSpinBox()
-        self.nickname_label = QLabel("Nickname")
-        self.nickname_input = QLineEdit()
-        self.nickname_input.setMinimumWidth(100)
         self.latest_received_label = QLabel("Seen Recently:")
         self.latest_received_label_value = QLabel("No")
         self.device_num_input.setReadOnly(True)
         layout.addWidget(self.device_label)
         layout.addWidget(self.device_num_input)
-        layout.addWidget(self.nickname_label)
-        layout.addWidget(self.nickname_input)
         layout.addWidget(self.latest_received_label)
         layout.addWidget(self.latest_received_label_value)
 
@@ -76,11 +70,9 @@ class TimerManager(QGroupBox):
         self.auto_poll_button = QPushButton("Start Polling")
         self.auto_poll_button.setCheckable(True)
         self.auto_poll_button.toggled.connect(self.set_polling_enabled)
-        self.sync_timers_button = QPushButton("Sync Timers")
         self.connection_status_label = QLabel("Disconnected")
         toolbar_layout.addWidget(self.discover_devices_button)
         toolbar_layout.addWidget(self.auto_poll_button)
-        toolbar_layout.addWidget(self.sync_timers_button)
         toolbar_layout.addWidget(self.connection_status_label)
         layout.addLayout(toolbar_layout)
         self.timer_list = QVBoxLayout()
@@ -112,7 +104,6 @@ class TimerManager(QGroupBox):
 
     def set_connection_state(self, connected: bool, port: str = ""):
         self.discover_devices_button.setEnabled(connected)
-        self.sync_timers_button.setEnabled(connected)
         self.auto_poll_button.setEnabled(connected)
         if connected:
             self.connection_status_label.setText(f"Connected: {port}")

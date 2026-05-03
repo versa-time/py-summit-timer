@@ -40,24 +40,27 @@ class SerialManager(QGroupBox):
         self.connect_button.clicked.connect(self.request_connect)
 
     def refresh_ports(self):
-        current_port = self.port_combo.currentText()
+        current_port = self.port_combo.currentData()
         self.port_combo.clear()
-        self.port_combo.addItem(EMULATOR_LABEL, EMULATOR_PORT)
 
         ports = sorted(list_ports.comports(), key=lambda port: port.device)
-        available_ports = [EMULATOR_LABEL]
+        available_ports = []
         for port in ports:
             # Only show usb or rs-232 ports
             if port.vid is not None or "RS-232" in port.description:
                 available_ports.append(port.device)
                 self.port_combo.addItem(port.device, port.device)
 
+        available_ports.append(EMULATOR_PORT)
+        self.port_combo.addItem(EMULATOR_LABEL, EMULATOR_PORT)
+
         has_ports = bool(available_ports)
         self.port_combo.setEnabled(has_ports)
         self.connect_button.setEnabled(has_ports)
 
         if current_port in available_ports:
-            self.port_combo.setCurrentText(current_port)
+            index = self.port_combo.findData(current_port)
+            self.port_combo.setCurrentIndex(index)
 
     def request_connect(self):
         port = self.port_combo.currentData()
