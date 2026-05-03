@@ -174,6 +174,20 @@ def test_live_excel_writer_updates_cells(tmp_path):
     assert writer.book.saved_path == str(file_path)
 
 
+def test_live_excel_writer_reconnects_after_transient_write_failure(tmp_path):
+    file_path = tmp_path / "live.xlsx"
+    fake_xlwings = FakeXlwings(fail_record_write_once=True)
+
+    writer = LiveExcelRecordWriter(file_path, "Timing", xlwings_module=fake_xlwings)
+    written = writer.append_records([make_record(1)])
+
+    sheet = writer.book.sheets["Timing"]
+    assert [record.record_number for record in written] == [1]
+    assert len(fake_xlwings.books) == 2
+    assert sheet.cells[(2, 2)] == 1
+    assert writer.book.saved_path == str(file_path)
+
+
 def test_format_timer_time_uses_three_digit_milliseconds():
     record = make_record(1)
     record.time = datetime.datetime.strptime("01:02:03.045", "%H:%M:%S.%f").time()
@@ -182,23 +196,31 @@ def test_format_timer_time_uses_three_digit_milliseconds():
 
 
 class FakeXlwings:
+    def __init__(self, fail_record_write_once=False):
+        self.fail_record_write_once = fail_record_write_once
+        self.books = []
+
     def Book(self, path=None):
-        return FakeBook(path)
+        book = FakeBook(path, self)
+        self.books.append(book)
+        return book
 
 
 class FakeBook:
-    def __init__(self, path=None):
+    def __init__(self, path=None, controller=None):
         self.path = path
+        self.controller = controller
         self.saved_path = None
-        self.sheets = FakeSheets([FakeSheet("Sheet1")])
+        self.sheets = FakeSheets([FakeSheet("Sheet1", controller)], controller)
 
     def save(self, path):
         self.saved_path = path
 
 
 class FakeSheets:
-    def __init__(self, sheets):
+    def __init__(self, sheets, controller=None):
         self._sheets = sheets
+        self.controller = controller
 
     def __iter__(self):
         return iter(self._sheets)
@@ -215,14 +237,15 @@ class FakeSheets:
         return self._sheets[item]
 
     def add(self, name, after=None):
-        sheet = FakeSheet(name)
+        sheet = FakeSheet(name, self.controller)
         self._sheets.append(sheet)
         return sheet
 
 
 class FakeSheet:
-    def __init__(self, name):
+    def __init__(self, name, controller=None):
         self.name = name
+        self.controller = controller
         self.cells = {}
         self.formats = {}
 
@@ -275,6 +298,15 @@ class FakeRange:
     @value.setter
     def value(self, values):
         start_row, start_column = self.start
+        if (
+            start_row >= 2
+            and start_column == 1
+            and self.sheet.controller is not None
+            and self.sheet.controller.fail_record_write_once
+        ):
+            self.sheet.controller.fail_record_write_once = False
+            raise RuntimeError("Excel is busy")
+
         if not isinstance(values, list):
             values = [[values]]
         elif values and not isinstance(values[0], list):

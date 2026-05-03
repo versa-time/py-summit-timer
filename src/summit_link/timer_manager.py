@@ -58,6 +58,7 @@ class TimerManager(QGroupBox):
         self.transport = transport
         self.data_writer = data_writer
         self.record_store = RecordStore()
+        self.pending_excel_records = []
         self.poll_index = 0
         self.setTitle("Timer Configuration")
         layout = QVBoxLayout()
@@ -101,6 +102,7 @@ class TimerManager(QGroupBox):
                 widget.deleteLater()
         self.timer_widgets.clear()
         self.poll_index = 0
+        self.pending_excel_records.clear()
 
     def set_connection_state(self, connected: bool, port: str = ""):
         self.discover_devices_button.setEnabled(connected)
@@ -126,6 +128,7 @@ class TimerManager(QGroupBox):
 
         self.clear_timer_list()
         self.record_store = RecordStore()
+        self.pending_excel_records.clear()
         for device_id in device_ids:
             self.add_timer(device_id)
 
@@ -181,21 +184,14 @@ class TimerManager(QGroupBox):
             self.connection_status_label.setText(f"Polling stopped: {exc}")
             return
         new_records = self.record_store.add_many(records)
+        self.pending_excel_records.extend(new_records)
 
-        if self.data_writer is not None and new_records:
-            try:
-                writer = self.data_writer.get_writer()
-                if writer is None:
-                    self.auto_poll_button.setChecked(False)
-                    self.connection_status_label.setText(
-                        "Select an Excel file before polling"
-                    )
-                    return
-                writer.append_records(new_records)
-            except Exception as exc:
-                self.auto_poll_button.setChecked(False)
-                self.connection_status_label.setText(f"Excel write failed: {exc}")
-                return
+        if not self.write_pending_excel_records():
+            timer_widget.update_record_state(
+                self.record_store.latest_record_number(device_id),
+                self.record_store.count(device_id),
+            )
+            return
 
         latest_record = self.record_store.latest_record_number(device_id)
         timer_widget.update_record_state(
@@ -205,6 +201,29 @@ class TimerManager(QGroupBox):
         self.connection_status_label.setText(
             f"Polling device {device_id}, next record #{self.record_store.next_missing_record_number(device_id)}"
         )
+
+    def write_pending_excel_records(self) -> bool:
+        if self.data_writer is None or not self.pending_excel_records:
+            return True
+
+        try:
+            writer = self.data_writer.get_writer()
+            if writer is None:
+                self.auto_poll_button.setChecked(False)
+                self.connection_status_label.setText(
+                    "Select an Excel file before polling"
+                )
+                return False
+
+            writer.append_records(self.pending_excel_records)
+        except Exception as exc:
+            self.connection_status_label.setText(
+                f"Excel write failed; will retry: {exc}"
+            )
+            return False
+
+        self.pending_excel_records.clear()
+        return True
 
     def minimumSizeHint(self):
         return QSize(600, 200)

@@ -8,6 +8,7 @@ from summit_timer.protocol import DataAck
 
 TIME_COLUMN_INDEX = 8
 TEXT_NUMBER_FORMAT = "@"
+LIVE_WRITE_ATTEMPTS = 2
 
 
 class LiveExcelUnavailableError(RuntimeError):
@@ -46,17 +47,19 @@ class ExcelRecordWriter:
         self._load_written_keys(sheet)
 
         written = []
+        written_keys = []
         for record in records:
             key = (record.device_id, record.record_number)
             if key in self._written_keys:
                 continue
 
             self._append_record(sheet, record)
-            self._written_keys.add(key)
+            written_keys.append(key)
             written.append(record)
 
         if written:
             workbook.save(self.file_path)
+            self._written_keys.update(written_keys)
 
         return written
 
@@ -154,19 +157,38 @@ class LiveExcelRecordWriter:
         if not records:
             return []
 
+        last_error = None
+        for attempt in range(LIVE_WRITE_ATTEMPTS):
+            try:
+                return self._append_records_once(records)
+            except Exception as exc:
+                last_error = exc
+                if attempt + 1 < LIVE_WRITE_ATTEMPTS:
+                    self.reconnect()
+
+        raise LiveExcelUnavailableError(
+            f"Could not write to Excel after {LIVE_WRITE_ATTEMPTS} attempts: {last_error}"
+        ) from last_error
+
+    def reconnect(self):
+        self.book = self._open_or_create_book()
+        self._written_keys.clear()
+
+    def _append_records_once(self, records: list[DataAck]) -> list[DataAck]:
         sheet = self._get_sheet()
         self._ensure_headers(sheet)
         self._load_written_keys(sheet)
 
         written = []
         rows = []
+        written_keys = []
         for record in records:
             key = (record.device_id, record.record_number)
             if key in self._written_keys:
                 continue
 
             rows.append(self._record_values(record))
-            self._written_keys.add(key)
+            written_keys.append(key)
             written.append(record)
 
         if written:
@@ -174,6 +196,7 @@ class LiveExcelRecordWriter:
             self._format_time_range_as_text(sheet, start_row, len(rows))
             sheet.range((start_row, 1)).value = rows
             self.book.save(str(self.file_path))
+            self._written_keys.update(written_keys)
 
         return written
 
