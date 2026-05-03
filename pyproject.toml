@@ -1,0 +1,40 @@
+[project]
+name = "py-summit-timer"
+version = "0.1.0"
+description = "Interfacing with Summit race timers."
+authors = [
+    {name = "es-mitty", email = "esmitty1212@gmail.com"},
+]
+dependencies = ["pyserial>=3.5", "crc>=7.1.0", "openpyxl>=3.1.5"]
+requires-python = "<3.14,>=3.13"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller>=6.15",
+]
+dev = [
+    "pytest>=8.4.2",
+    "ruff>=0.13.1",
+]
+gui = [
+    "PySide6>=6.10.1",
+    "xlwings>=0.33.16",
+]
+
+[project.scripts]
+summit-link = "summit_link.launcher:main"
+
+[tool.pdm.scripts]
+build-app = "pyinstaller --noconfirm --clean --windowed --onedir --name SummitLink src/summit_link/launcher.py"
+format = "pdm run ruff format"
+lint-fix = "pdm run ruff check --fix"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
