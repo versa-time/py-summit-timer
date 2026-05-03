@@ -142,7 +142,10 @@ class TimerManager(QGroupBox):
                 self.auto_poll_button.setChecked(False)
                 self.connection_status_label.setText("Discover devices before polling")
                 return
-            if self.data_writer is not None and self.data_writer.get_writer() is None:
+            if (
+                self.data_writer is not None
+                and not self.data_writer.has_file_selected()
+            ):
                 self.auto_poll_button.setChecked(False)
                 self.connection_status_label.setText(
                     "Select an Excel file before polling"
@@ -179,15 +182,15 @@ class TimerManager(QGroupBox):
             return
         new_records = self.record_store.add_many(records)
 
-        if self.data_writer is not None:
-            writer = self.data_writer.get_writer()
-            if writer is None:
-                self.auto_poll_button.setChecked(False)
-                self.connection_status_label.setText(
-                    "Select an Excel file before polling"
-                )
-                return
+        if self.data_writer is not None and new_records:
             try:
+                writer = self.data_writer.get_writer()
+                if writer is None:
+                    self.auto_poll_button.setChecked(False)
+                    self.connection_status_label.setText(
+                        "Select an Excel file before polling"
+                    )
+                    return
                 writer.append_records(new_records)
             except Exception as exc:
                 self.auto_poll_button.setChecked(False)
