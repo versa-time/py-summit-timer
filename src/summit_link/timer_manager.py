@@ -18,9 +18,6 @@ from summit_timer.transport import Transport
 
 DISCOVER_MIN_DEVICE_ID = 1
 DISCOVER_MAX_DEVICE_ID = 20
-DISCOVER_TIMEOUT_SECONDS = 0.2
-POLL_TIMEOUT_SECONDS = 0.1
-POLL_QUIET_DELAY_SECONDS = 0.05
 
 
 class TimerWidget(QWidget):
@@ -123,7 +120,6 @@ class TimerManager(QGroupBox):
         device_ids = client.discover_devices(
             start_device_id=DISCOVER_MIN_DEVICE_ID,
             end_device_id=DISCOVER_MAX_DEVICE_ID,
-            timeout=DISCOVER_TIMEOUT_SECONDS,
         )
 
         self.clear_timer_list()
@@ -173,12 +169,7 @@ class TimerManager(QGroupBox):
 
         client = SummitTimerClient(self.transport, device_id=0)
         try:
-            records = client.poll_device(
-                device_id,
-                next_record,
-                timeout=POLL_TIMEOUT_SECONDS,
-                quiet_delay=POLL_QUIET_DELAY_SECONDS,
-            )
+            records = client.poll_device(device_id, next_record)
         except Exception as exc:
             self.auto_poll_button.setChecked(False)
             self.connection_status_label.setText(f"Polling stopped: {exc}")
