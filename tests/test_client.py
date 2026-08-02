@@ -132,4 +132,4 @@ def test_poll_device_silences_bus_before_requesting_records():
 
     assert client.poll_device(2, 3, timeout=0.01, quiet_delay=0) == []
     assert transport.sent_packets == [proto.GiveToken(0), proto.GetData(2, 3)]
-    assert transport.cleared == 1
+    assert transport.cleared == 2

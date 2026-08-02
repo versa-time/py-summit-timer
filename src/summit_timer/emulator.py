@@ -16,7 +16,7 @@ class SummitEmulator:
         record_interval: float = 2.0,
     ):
         if device_ids is None:
-            device_ids = [1, 2]
+            device_ids = [1, 2, 4, 5]
 
         self.device_ids = set(device_ids)
         self.max_records = max_records

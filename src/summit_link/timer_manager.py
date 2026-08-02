@@ -80,9 +80,7 @@ class TimerManager(QGroupBox):
         self.timer_list_widget.setLayout(self.timer_list)
         self.timer_list_scroll_area.setWidget(self.timer_list_widget)
         layout.addWidget(self.timer_list_scroll_area)
-        self.poll_timer = QTimer(self)
-        self.poll_timer.setInterval(10)
-        self.poll_timer.timeout.connect(self.poll_next_device)
+        self._polling = False
         self.set_connection_state(False)
 
     def add_timer(self, device_id: int):
@@ -152,15 +150,20 @@ class TimerManager(QGroupBox):
                 return
 
             self.auto_poll_button.setText("Stop Polling")
-            self.poll_timer.start()
+            self._polling = True
+            QTimer.singleShot(10, self.poll_next_device)
         else:
-            self.poll_timer.stop()
+            self._polling = False
             self.auto_poll_button.setText("Start Polling")
 
     def poll_next_device(self):
+        if not self._polling:
+            return
         if not self.timer_widgets:
             self.set_polling_enabled(False)
             return
+
+        QTimer.singleShot(10, self.poll_next_device)
 
         timer_widget = self.timer_widgets[self.poll_index % len(self.timer_widgets)]
         self.poll_index += 1

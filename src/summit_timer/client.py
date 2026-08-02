@@ -92,4 +92,5 @@ class SummitTimerClient:
         self.stop_all_devices()
         if quiet_delay > 0:
             time.sleep(quiet_delay)
+        self.transport.clear_input_buffer()
         return self.get_data(device_id, row_number, timeout=timeout)
