@@ -5,13 +5,16 @@ import time
 MAX_DEVICES = 16
 DISCOVERY_ROW_NUMBER = 1
 
+BUS_QUIET_DELAY = 0.05
+DATA_TIMEOUT = 0.2
+
 
 class SummitTimerClient:
     def __init__(self, transport: Transport, device_id: int):
         self.transport = transport
         self.device_id = device_id
 
-    def ping_host(self, device_id: int, timeout: float = 0.1) -> bool:
+    def ping_host(self, device_id: int, timeout: float = DATA_TIMEOUT) -> bool:
         """Ping a device to see if it is connected."""
         self.transport.clear_input_buffer()
         self.transport.send(proto.GetData(device_id, DISCOVERY_ROW_NUMBER))
@@ -22,14 +25,29 @@ class SummitTimerClient:
         )
 
     def discover_devices(
-        self, start_device_id: int = 1, end_device_id: int = 255, timeout: float = 0.1
+        self,
+        start_device_id: int = 1,
+        end_device_id: int = 255,
+        timeout: float = DATA_TIMEOUT,
+        quiet_delay: float = BUS_QUIET_DELAY,
     ) -> list[int]:
-        """Discover connected devices by requesting an ACK from each device ID."""
+        """Discover connected devices by requesting an ACK from each device ID.
+
+        Follows the token-based protocol: silence bus + wait before and after
+        each device ping.
+        """
+        self.transport.clear_input_buffer()
+        self.stop_all_devices()
+        if quiet_delay > 0:
+            time.sleep(quiet_delay)
         discovered_devices = []
         for device_id in range(start_device_id, end_device_id + 1):
             if self.ping_host(device_id, timeout=timeout):
                 discovered_devices.append(device_id)
-        self.transport.clear_input_buffer()
+            self.stop_all_devices()
+            if quiet_delay > 0:
+                time.sleep(quiet_delay)
+            self.transport.clear_input_buffer()
         return discovered_devices
 
     def set_event_and_heat(
@@ -45,7 +63,7 @@ class SummitTimerClient:
         self.transport.send(proto.GiveToken(0))
 
     def get_data(
-        self, device_id: int, row_number: int, timeout: float = 0.2
+        self, device_id: int, row_number: int, timeout: float = DATA_TIMEOUT
     ) -> list[proto.DataAck]:
         """Get all records a device sends for one token request."""
         self.transport.send(proto.GetData(device_id, row_number))
@@ -66,12 +84,13 @@ class SummitTimerClient:
         self,
         device_id: int,
         row_number: int,
-        timeout: float = 0.2,
-        quiet_delay: float = 0.05,
+        timeout: float = DATA_TIMEOUT,
+        quiet_delay: float = BUS_QUIET_DELAY,
     ) -> list[proto.DataAck]:
         """Silence the bus, then request records from one device."""
         self.transport.clear_input_buffer()
         self.stop_all_devices()
         if quiet_delay > 0:
             time.sleep(quiet_delay)
+        self.transport.clear_input_buffer()
         return self.get_data(device_id, row_number, timeout=timeout)

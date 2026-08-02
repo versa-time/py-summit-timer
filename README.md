@@ -5,6 +5,8 @@
 
 # py-summit-timer
 
+# Summit Timer Communication Protocol
+
 Following are commands from PC to Timer
 
 

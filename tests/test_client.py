@@ -39,7 +39,7 @@ class FakeTransport:
 def test_discover_devices_returns_acknowledged_ids():
     client = SummitTimerClient(FakeTransport({7, 42}), device_id=0)
 
-    discovered = client.discover_devices(1, 50, timeout=0.01)
+    discovered = client.discover_devices(1, 50, timeout=0.01, quiet_delay=0)
 
     assert discovered == [7, 42]
 
@@ -105,10 +105,31 @@ def test_get_data_reads_records_until_ack():
     assert transport.sent_packets == [proto.GetData(1, 1)]
 
 
+def test_discover_devices_silences_bus_before_pinging():
+    transport = FakeTransport({4, 8})
+    client = SummitTimerClient(transport, device_id=0)
+
+    discovered = client.discover_devices(1, 10, timeout=0.01, quiet_delay=0)
+
+    assert discovered == [4, 8]
+    assert transport.sent_packets[0] == proto.GiveToken(0)
+    getdata_packets = [
+        p for p in transport.sent_packets if isinstance(p, proto.GetData)
+    ]
+    assert len(getdata_packets) == 10
+    givetoken_zero = [
+        p
+        for p in transport.sent_packets
+        if isinstance(p, proto.GiveToken) and p.device_id == 0
+    ]
+    assert len(givetoken_zero) == 11
+    assert transport.cleared == 1 + 10 * 2
+
+
 def test_poll_device_silences_bus_before_requesting_records():
     transport = FakeTransport(responses=[proto.Ack(2)])
     client = SummitTimerClient(transport, device_id=0)
 
     assert client.poll_device(2, 3, timeout=0.01, quiet_delay=0) == []
     assert transport.sent_packets == [proto.GiveToken(0), proto.GetData(2, 3)]
-    assert transport.cleared == 1
+    assert transport.cleared == 2
